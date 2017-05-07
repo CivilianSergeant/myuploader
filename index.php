@@ -81,6 +81,7 @@
 		var incr = (64*1024);
                 var bufferWrite = 0;
                 var speed = 0;
+                var seconds = 0;
 
 		$("input[type=file]").change(function(event) {
 
@@ -164,19 +165,48 @@
                                         var blob = file.slice(startAt,loaded);
                                         reader.readAsDataURL(blob);
                                         
+                                        // data transfer speed
                                         var bufferWriteInterval = setInterval(function(){
                                             if(!bufferWrite){
                                                 clearInterval(bufferWriteInterval);
                                             }
                                             if(bufferWrite){
+                                                
                                                 speed = Math.round(bufferWrite/1024);
-                                                console.log((speed%1024));
-                                                if((speed%1024)){
+                                                var seconds = Math.round((total-loaded)/bufferWrite);
+                                                var minutes = 0;
+                                                var hours = 0;
+                                                if(seconds>60){
+                                                    minutes = Math.round(seconds/60);
+                                                    minutes = (minutes<10)? "0"+minutes : minutes;
+                                                    if(minutes>60){
+                                                        hours = Math.round(minutes/60);
+                                                        hours = (hours<10)? "0"+hours : hours;
+                                                        minutes = minutes%60;
+                                                    }
+                                                    seconds = seconds%60;
+                                                    seconds = (seconds<10)? "0"+seconds : seconds;
+                                                }
+                                                if(speed>1024){
                                                     speed = Math.round(speed/1024);
-                                                    speed = speed + "Mbps";
+                                                    speed = speed + "Mbps , About ";
+                                                    if(hours)
+                                                        speed += hours+" hours ";
+                                                    if(minutes)
+                                                        speed += minutes+" minutes ";
+                                                    if(!minutes && seconds)
+                                                        speed += seconds+" seconds ";
+                                                    speed += "remaining";
                                                     $("#speed").text(speed);
                                                 }else{
-                                                    speed = speed + "Kbps";
+                                                    speed = speed + "Kbps , About ";
+                                                    if(hours)
+                                                        speed += hours+" hours ";
+                                                    if(minutes)
+                                                        speed += minutes+" minutes ";
+                                                    if(!minutes && seconds)
+                                                        speed += seconds+" seconds ";
+                                                    speed += "remaining";
                                                     $("#speed").text(speed);
                                                 }
                                             }
